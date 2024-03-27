@@ -8,7 +8,7 @@ const PostSchema = new schema({
         ref: 'user',
         required: true
     },
-    text0:{
+    text:{
         type: String,
         maxLength:500
     },
@@ -16,8 +16,9 @@ const PostSchema = new schema({
         type: String,
     },
     likes:{
-        type: Number,
-        default: 0
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'user',
+        default: [],
     },
     replies:[
         {

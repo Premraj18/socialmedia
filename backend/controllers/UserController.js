@@ -2,6 +2,22 @@ const bcrypt = require('bcryptjs')
 const User = require("../models/UserModel");
 const generateTokenAndSetCookie = require('../utils/helpers/generateTokenAndSetCookie');
 
+
+//UserProfile
+const getUserProfile = async (req,res) => {
+    const {username} = req.params;
+    try {
+        const user = await User.findOne({username}).select('-password').select('-updatedAt');
+        if(!user) return res.status(400).json({message: "User not found"});
+
+        res.status(200).json(user);
+    } 
+    catch (error) {
+        res.status(500).json({message: error.mesage})
+        console.log('Error in UserProfile', error.message)
+    }
+}
+
 //signUp User
 const signupUser = async (req,res) => {
     try {
@@ -154,9 +170,5 @@ const updateUser = async (req,res) => {
     }
 }
 
-//
-const getUserProfile = async () => {
-
-}
 
 module.exports = {signupUser,loginUser,logoutUser,followUnFollowUser,updateUser,getUserProfile};
