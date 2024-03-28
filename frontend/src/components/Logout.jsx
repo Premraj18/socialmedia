@@ -1,5 +1,6 @@
 import { Button } from '@chakra-ui/react';
 import React from 'react'
+import { BiLogOut } from "react-icons/bi";
 import { useSetRecoilState } from 'recoil';
 import userAtom from '../atoms/userAtom';
 import useShowToast from '../hooks/useShowToast';
@@ -38,8 +39,8 @@ const Logout = () => {
     return (
         <>
             <Button position={'fixed'} top={'30px'} right={'30px'} size={'sm'} onClick={handleLogout}>
-                logout
-            </Button>
+                <BiLogOut size={25}/>
+            </Button >
         </>
     )
 
