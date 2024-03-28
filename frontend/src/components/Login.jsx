@@ -61,7 +61,7 @@ export default function Login() {
                 username: '',
                 password: '',
             })
-            console.log(data)
+            // console.log(data)
         }
         catch (error) {
             showToast('Error', error, 'error')

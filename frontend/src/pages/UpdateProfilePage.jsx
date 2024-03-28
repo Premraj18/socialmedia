@@ -19,6 +19,7 @@ import usePrivewImage from '../hooks/usePrivewImage';
 
 export default function UpdateProfilePage() {
     const [user, setUser] = useRecoilState(userAtom);
+    const [updating,setUpdating] = useState(false)
     const [inputs, setInputs] = useState({
         name: user.name,
         username: user.username,
@@ -36,6 +37,7 @@ export default function UpdateProfilePage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setUpdating(true)
         try {
             const res = await fetch(`/api/users/update/${user._id}`, {
                 method: 'PUT',
@@ -46,7 +48,7 @@ export default function UpdateProfilePage() {
             })
 
             const data = await res.json();
-            console.log(data)
+            // console.log(data)
 
             if (data.error) {
                 showToast('Error', data.error, 'error')
@@ -69,6 +71,9 @@ export default function UpdateProfilePage() {
         }
         catch (error) {
             showToast('Error', error.message, 'error')
+        }
+        finally{
+            setUpdating(false)
         }
     }
     return (
@@ -158,6 +163,7 @@ export default function UpdateProfilePage() {
                             Cancel
                         </Button>
                         <Button
+                            isLoading={updating}
                             type='submit'
                             bg={'green.400'}
                             color={'white'}
