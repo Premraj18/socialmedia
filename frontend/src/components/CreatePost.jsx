@@ -67,6 +67,7 @@ const CreatePost = () => {
 
             if(data.error){
                 showToast('Error', data.error, 'error');
+                return;
             }
             showToast('Success', 'Post created Successfully', 'success')
             onClose();
