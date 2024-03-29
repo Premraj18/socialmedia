@@ -38,7 +38,7 @@ const Logout = () => {
 
     return (
         <>
-            <Button position={'fixed'} top={'30px'} right={'30px'} size={'sm'} onClick={handleLogout}>
+            <Button position={'fixed'} bottom={'60px'} left={'30px'} size={'sm'} onClick={handleLogout}>
                 <BiLogOut size={25}/>
             </Button >
         </>

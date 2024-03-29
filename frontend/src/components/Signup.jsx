@@ -34,9 +34,11 @@ export default function Signup() {
 
     const setUser = useSetRecoilState(userAtom)
     const showToast = useShowToast();
+    const [loading, setloading] = useState(false)
 
     const handleSignup = async (e) => {
         e.preventDefault();
+        setloading(true)
         try {
             const res = await fetch('/api/users/signup',{
                 method: 'POST',
@@ -69,6 +71,9 @@ export default function Signup() {
         } 
         catch (error) {
             showToast('Error', error, 'error')
+        }
+        finally{
+            setloading(false)
         }
     }
 
@@ -127,7 +132,8 @@ export default function Signup() {
                                     color={'white'}
                                     _hover={{
                                         bg: useColorModeValue('gray.700', 'gray.800'),
-                                    }}>
+                                    }}
+                                    isLoading={loading}>
                                     Sign up
                                 </Button>
                             </Stack>

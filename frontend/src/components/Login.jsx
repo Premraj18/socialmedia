@@ -32,9 +32,11 @@ export default function Login() {
 
     const setUser = useSetRecoilState(userAtom);
     const showToast = useShowToast();
+    const [loading, setloading] = useState(false);
 
     const handlelogin = async (e) => {
         e.preventDefault();
+        setloading(true)
         try {
             const res = await fetch('/api/users/login', {
                 method: 'POST',
@@ -65,6 +67,9 @@ export default function Login() {
         }
         catch (error) {
             showToast('Error', error, 'error')
+        }
+        finally{
+            setloading(false)
         }
     }
 
@@ -107,13 +112,14 @@ export default function Login() {
                             <Stack spacing={10} pt={2}>
                                 <Button
                                     type='submit'
-                                    loadingText="Submitting"
+                                    loadingText="logging in"
                                     size="lg"
                                     bg={useColorModeValue('gray.600', 'gray.700')}
                                     color={'white'}
                                     _hover={{
                                         bg: useColorModeValue('gray.700', 'gray.800'),
-                                    }}>
+                                    }}
+                                    isLoading={loading}>
                                     login
                                 </Button>
                             </Stack>
