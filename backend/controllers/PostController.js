@@ -57,6 +57,26 @@ const getPost = async (req,res) => {
     }
 }
 
+
+const getUserPost = async (req,res) => {
+    const { username } = req.params;
+    try {
+        const user = await User.findOne({username});
+
+        if(!user){
+            return res.status(404).json({error: 'User not Found'});
+        }
+
+        const post = await Post.find({postedBy: user._id}).sort({createdAt: -1})
+
+        res.status(200).json(post)
+    } 
+    catch (error) {
+        res.status(500).json({error: error.message});
+        console.log('Error in getPost', error.message)
+    }
+}
+
 //delete the specific post by id 
 const deletePost = async (req,res) => {
     try {
@@ -154,11 +174,12 @@ const deleteReply = async (req,res) => {
             return res.status(404).json({ error: 'Post not found' });
         }
 
-        if(post.postedBy.toString() !== req.user._id.toString()){
+        
+        
+        const replyIndex = post.replies.findIndex(reply => reply._id.toString() === replyId);
+        if(post.replies[replyIndex].userId.toString() !== req.user._id.toString()){
             return res.status(400).json({error: 'Unauthorized to delete reply'});
         }
-
-        const replyIndex = post.replies.findIndex(reply => reply._id.toString() === replyId);
         if (replyIndex === -1) {
             return res.status(404).json({ error: 'Reply not found' });
         }
@@ -196,4 +217,4 @@ const getFeedPost = async (req,res) => {
     }
 }
 
-module.exports = { createPost,getPost,deletePost,likeUnlikePost,replyToPost,deleteReply,getFeedPost };
+module.exports = { createPost,getPost,deletePost,likeUnlikePost,replyToPost,deleteReply,getFeedPost,getUserPost };

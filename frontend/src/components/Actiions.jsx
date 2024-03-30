@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
 	Box,
 	Button,
@@ -15,10 +15,97 @@ import {
 	Text,
 	useDisclosure,
 } from "@chakra-ui/react";
+import useShowToast from '../hooks/useShowToast';
+import { useRecoilValue } from 'recoil';
+import userAtom from '../atoms/userAtom';
 
-const Actiions = ({liked, setLiked}) => {
-  return (
-    <Flex flexDirection='column'>
+const Actiions = ({ post: post_ }) => {
+	const showToast = useShowToast();
+	const user = useRecoilValue(userAtom);
+
+	const [liked, setLiked] = useState(post_.likes.includes(user?._id))
+	const [post, setPost] = useState(post_);
+	const [isliking, setIsLiking] = useState(false);
+	const [reply, setReply] = useState("")
+	const [isReplying, setIsReplying] = useState(false);
+
+	const { isOpen, onOpen, onClose} = useDisclosure()
+
+
+	const handleLikeUnlike = async () => {
+		if (!user) {
+			return showToast('Error', 'You must be logged in to like a post', 'error')
+		}
+		if(isliking) return;
+		setIsLiking(true)
+		try {
+			const res = await fetch(`/api/posts/like/${post_._id}`, {
+				method: 'PUT',
+				headers: {
+					"Content-Type": 'application/json'
+				},
+			})
+
+			const data = await res.json();
+
+			if (data.error) {
+				showToast('Error', data.error, 'error')
+				return;
+			}
+
+			if (!liked) {
+				setPost({ ...post, likes: [...post.likes, user._id] })
+			}
+			else {
+				setPost({ ...post, likes: post.likes.filter(id => id !== user._id) })
+			}
+
+			setLiked(!liked)
+			// window.location.reload();
+			// showToast('Success', 'Liked', 'success')
+		}
+		catch (error) {
+			showToast('Error',error.message,'error')
+		}
+		finally{
+			setIsLiking(false)
+		}
+	}
+
+	const handleReply = async () => {
+		if (!user) {
+			return showToast('Error', 'You must be logged in to reply a post', 'error')
+		}
+		setIsReplying(true)
+		try {
+			const res = await fetch(`/api/posts/reply/${post._id}`,{
+				method: 'PUT',
+				headers:{
+					"COntent-Type": "application/json",
+				},
+				body: JSON.stringify({text: reply})
+			})
+			const data = await res.json();
+			if (data.error) {
+				showToast('Error', data.error, 'error')
+				return;
+			}
+			
+			setPost({...post, replies: [...post.replies, data.reply]})
+			showToast('Sucess', 'Reply posted successfully', 'success')
+			onClose();
+			setReply('')
+		} 
+		catch (error) {
+			showToast("Error", error.message, 'error');
+		}
+		finally{
+			setIsReplying(false)
+		}
+	}
+
+	return (
+		<Flex flexDirection='column'>
 			<Flex gap={3} my={2} onClick={(e) => e.preventDefault()}>
 				<svg
 					aria-label='Like'
@@ -28,8 +115,8 @@ const Actiions = ({liked, setLiked}) => {
 					role='img'
 					viewBox='0 0 24 22'
 					width='20'
-                    onClick={() => setLiked(!liked)}
-					// onClick={handleLikeAndUnlike}
+					onClick={handleLikeUnlike}
+				// onClick={handleLikeAndUnlike}
 				>
 					<path
 						d='M1 7.66c0 4.575 3.899 9.086 9.987 12.934.338.203.74.406 1.013.406.283 0 .686-.203 1.013-.406C19.1 16.746 23 12.234 23 7.66 23 3.736 20.245 1 16.672 1 14.603 1 12.98 1.94 12 3.352 11.042 1.952 9.408 1 7.328 1 3.766 1 1 3.736 1 7.66Z'
@@ -46,7 +133,7 @@ const Actiions = ({liked, setLiked}) => {
 					role='img'
 					viewBox='0 0 24 24'
 					width='20'
-					// onClick={onOpen}
+					onClick={onOpen}
 				>
 					<title>Comment</title>
 					<path
@@ -62,17 +149,17 @@ const Actiions = ({liked, setLiked}) => {
 				<ShareSVG />
 			</Flex>
 
-			{/* <Flex gap={2} alignItems={"center"}>
+			<Flex gap={2} alignItems={"center"}>
 				<Text color={"gray.light"} fontSize='sm'>
-					{post.replies.length} replies
+					{post_.replies.length} replies
 				</Text>
 				<Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
 				<Text color={"gray.light"} fontSize='sm'>
-					{post.likes.length} likes
+					{post_.likes.length} likes
 				</Text>
-			</Flex> */}
+			</Flex>
 
-			{/* <Modal isOpen={isOpen} onClose={onClose}>
+			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
 				<ModalContent>
 					<ModalHeader></ModalHeader>
@@ -93,7 +180,7 @@ const Actiions = ({liked, setLiked}) => {
 						</Button>
 					</ModalFooter>
 				</ModalContent>
-			</Modal> */}
+			</Modal>
 		</Flex>
 	);
 
