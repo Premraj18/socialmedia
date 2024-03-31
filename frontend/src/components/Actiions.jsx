@@ -23,7 +23,7 @@ const Actiions = ({ post: post_ }) => {
 	const showToast = useShowToast();
 	const user = useRecoilValue(userAtom);
 
-	const [liked, setLiked] = useState(post_.likes.includes(user?._id))
+	const [liked, setLiked] = useState(post_?.likes?.includes(user?._id))
 	const [post, setPost] = useState(post_);
 	const [isliking, setIsLiking] = useState(false);
 	const [reply, setReply] = useState("")
@@ -78,7 +78,7 @@ const Actiions = ({ post: post_ }) => {
 		}
 		setIsReplying(true)
 		try {
-			const res = await fetch(`/api/posts/reply/${post._id}`,{
+			const res = await fetch(`/api/posts/reply/${post_._id}`,{
 				method: 'PUT',
 				headers:{
 					"COntent-Type": "application/json",
@@ -90,7 +90,7 @@ const Actiions = ({ post: post_ }) => {
 				showToast('Error', data.error, 'error')
 				return;
 			}
-			
+
 			setPost({...post, replies: [...post.replies, data.reply]})
 			showToast('Sucess', 'Reply posted successfully', 'success')
 			onClose();
@@ -151,11 +151,11 @@ const Actiions = ({ post: post_ }) => {
 
 			<Flex gap={2} alignItems={"center"}>
 				<Text color={"gray.light"} fontSize='sm'>
-					{post_.replies.length} replies
+					{post_?.replies?.length} replies
 				</Text>
 				<Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
 				<Text color={"gray.light"} fontSize='sm'>
-					{post_.likes.length} likes
+					{post_?.likes?.length} likes
 				</Text>
 			</Flex>
 
